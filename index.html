@@ -15,13 +15,18 @@
   --tx:#eaecf5; --mt:#60697a;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
+button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;}
+button, a {
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  cursor:pointer;
+}
 
 /* ── BODY: totally normal, scrolls naturally ── */
 body{
   background:var(--bg); color:var(--tx);
   font-family:'DM Sans',sans-serif;
-  /* NO overflow:hidden, NO position:fixed on body */
-  padding-bottom:80px; /* space for sticky nav */
+  padding-bottom:90px;
 }
 
 /* ── TOP BAR ── */
@@ -29,7 +34,6 @@ body{
   background:var(--s1); border-bottom:1px solid var(--bd);
   padding:12px 16px;
   display:flex; align-items:center; gap:12px;
-  position:sticky; top:0; z-index:50;
 }
 #menuBtn{
   width:40px; height:40px; border-radius:10px;
@@ -49,15 +53,14 @@ body{
 }
 
 /* ── PAGES ── */
-.page{display:none; padding:16px;}
+.page{display:none; padding:16px; position:relative; z-index:1;}
 .page.active{display:block;}
 
 /* ── BOTTOM NAV: sticky to bottom, no fixed ── */
 #botNav{
   position:fixed; bottom:0; left:0; right:0;
   background:var(--s1); border-top:1px solid var(--bd);
-  display:flex; z-index:50;
-  /* NO transform, NO will-change, NO backdrop-filter */
+  display:flex; z-index:9999;
 }
 .bn{
   flex:1; display:flex; flex-direction:column;
@@ -67,8 +70,10 @@ body{
   color:var(--mt); font-family:'DM Sans',sans-serif;
   font-size:10px; font-weight:600;
   cursor:pointer; position:relative;
-  /* The most important fix for iOS: */
   -webkit-appearance:none;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(79,142,247,0.2);
+  min-height:60px;
 }
 .bn.on{color:var(--ac);}
 .bn-ico{font-size:22px; line-height:1;}
@@ -650,7 +655,7 @@ body{
 
 <!-- TOP BAR -->
 <div id="topBar">
-  <button id="menuBtn" onclick="openDrawer()">☰</button>
+  <button id="menuBtn" onclick="openDrawer()" ontouchend="event.preventDefault();openDrawer()">☰</button>
   <div id="topTitle">Med<span>Deck</span></div>
   <div id="topBadge"></div>
 </div>
@@ -758,17 +763,25 @@ body{
 
 <!-- BOTTOM NAV -->
 <div id="botNav">
-  <button class="bn on" id="bnHome" onclick="navTo('home')">
+  <button class="bn on" id="bnHome"
+    onclick="navTo('home')"
+    ontouchend="event.preventDefault();navTo('home')">
     <span class="bn-ico">🏠</span>Início
   </button>
-  <button class="bn" id="bnUpload" onclick="navTo('upload')">
+  <button class="bn" id="bnUpload"
+    onclick="navTo('upload')"
+    ontouchend="event.preventDefault();navTo('upload')">
     <span class="bn-ico">📤</span>Importar
   </button>
-  <button class="bn" id="bnCards" onclick="navTo('cards')">
+  <button class="bn" id="bnCards"
+    onclick="navTo('cards')"
+    ontouchend="event.preventDefault();navTo('cards')">
     <span class="bn-ico">📇</span>Cards
     <div class="bn-dot" id="bndCards"></div>
   </button>
-  <button class="bn" id="bnStudy" onclick="startStudyDue()">
+  <button class="bn" id="bnStudy"
+    onclick="startStudyDue()"
+    ontouchend="event.preventDefault();startStudyDue()">
     <span class="bn-ico">🎯</span>Revisar
     <div class="bn-dot" id="bndStudy"></div>
   </button>
@@ -1518,6 +1531,9 @@ async function testAPI(){
     }
   }
 }
+
+// iOS Safari touch fix — makes ALL elements respond instantly to tap
+document.addEventListener('touchstart', function(){}, {passive:true});
 
 load();renderAll();loadKey();
 </script>
